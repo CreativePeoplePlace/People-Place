@@ -1,0 +1,87 @@
+/* 
+
+pp.css
+
+contents:
+
+	1. shared minimal styles
+
+*/
+
+
+/* 1. shared minimal styles
+--------------------------------------------------------------------------------------- */
+
+.embed
+	{
+	margin: 0;
+	padding: 0;
+	}
+
+.pp-shortcode-map-canvas 
+	{
+	margin-bottom: 20px;
+	}
+
+.pp-shortcode-map-canvas img 
+	{
+	max-width: inherit;
+	}
+	
+.pp-radios
+	{
+	width: 100%;
+	background: #fff;
+	margin-right: 10px;
+	border: 1px solid #717B87;
+	display: none;
+	}
+
+/* share buttons on creativepeopleplace.info */
+
+#shareme
+	{
+	background: #dedede;
+	overflow: hidden;
+	padding: 10px;
+	position: relative;
+	top: -20px;
+	}
+
+.embed #shareme
+	{
+	margin-bottom: 0;
+	}
+
+#shareme .buttons
+	{
+	width: 192px;
+	margin: 0 auto;
+	overflow: hidden;
+	}
+	
+#shareme .button
+	{
+	vertical-align: middle;
+	height: 22px;
+	padding: 3px;
+	float: left;
+	width: 80px;
+	text-align: center;
+	background: #c9c9c9;
+	margin: 0 5px;
+	}
+
+#___plusone_0
+	{
+	position: relative;
+	left: 10px;	
+	top: 1px;
+	}
+
+.twitter-share-button
+	{
+	position: relative;
+	top: 1px;
+	left: 2px;
+	}

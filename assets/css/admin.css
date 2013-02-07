@@ -1,0 +1,51 @@
+/* 
+
+admin.css
+contents:
+		
+	1. Admin CSS Tweaks
+	2. metaboxes
+
+*/
+
+/* 1. Admin CSS Tweaks
+--------------------------------------------------------------------------------------- */
+	
+#menu-posts-pp .wp-menu-image img
+	{
+	display: none !important;
+	}
+	
+#menu-posts-pp .wp-menu-image 
+	{
+	background: url(../images/icon-post-type-places.png) no-repeat 6px -17px !important;
+	overflow: hidden;
+	}
+	
+#menu-posts-pp:hover .wp-menu-image, #menu-posts-pp.wp-has-current-submenu .wp-menu-image
+	{
+    background-position: 6px 7px !important;
+	}
+
+table.cmb_metabox tr:last-child td, 
+table.cmb_metabox tr:last-child th
+	{
+	border-bottom: none;
+	}
+	
+/* 2. metaboxes
+--------------------------------------------------------------------------------------- */
+
+.at-field
+	{
+	border: none !important;
+	padding: 2px 2px 6px !important;
+	}
+
+.at-label
+	{
+	font-size: inherit !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	font-weight: bold !important;
+	}
