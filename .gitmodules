@@ -1,6 +1,6 @@
 [submodule "assets/lib/tax-metabox"]
 	path = assets/lib/tax-metabox
-	url = git://github.com/bainternet/Tax-Meta-Class.git
+	url = http://github.com/bainternet/Tax-Meta-Class.git
 [submodule "assets/lib/metabox"]
 	path = assets/lib/metabox
-	url = git://github.com/bainternet/My-Meta-Box.git
+	url = http://github.com/bainternet/My-Meta-Box.git
