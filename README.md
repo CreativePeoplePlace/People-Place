@@ -2,7 +2,7 @@
 
 * Plugin Name: People Place
 * Plugin URI: [github.com/CreativePeoplePlace/People-Place](https://github.com/CreativePeoplePlace/People-Place)
-* Description: A WordPress plugin for mapping creative people in places.
+* Description: A WordPress plugin for mapping Creative People and Places.
 * Author: Community Powered
 * Version: 0.91
 * Author URI: [creativepeoplepace.info](http://creativepeopleplace.info)
