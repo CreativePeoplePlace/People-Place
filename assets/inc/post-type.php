@@ -73,40 +73,5 @@ function pp_register_places() {
 	);
 	
 	register_post_type('pp', $args);
-	
-	// taxonomy meta
-	$taxprefix = '_pp_';
-	$taxconfig = array(
-		'id' => 'pp_category_meta', // meta box id, unique per meta box
-		'title' => __('Meta', 'pp'), // meta box title
-		'pages' => array('pp_category'), // taxonomy name, accept categories, post_tag and custom taxonomies
-		'context' => 'normal', // where the meta box appear: normal (default), advanced, side; optional
-		'fields' => array(), // list of meta fields (can be added by field arrays)
-		'local_images' => false, // Use local or hosted images (meta box images for add/remove)
-		'use_with_theme' => false //change path if used with theme set to true, false for a plugin or anything else for a custom path(default false).
-	);
-
-	$taxmeta = new Tax_Meta_Class($taxconfig);
-    $taxmeta->addImage($taxprefix.'icon',array('name'=> __('Icon (square .png)','pp')));
-    $taxmeta->Finish();
-
-	// post meta
-	$prefix = '_pp_';
-	$config = array(
-		'id' => 'pp_meta', // meta box id, unique per meta box
-		'title' => __('Detail', 'pp'), // meta box title
-		'pages' => array('pp'), // post types, accept custom post types as well, default is array('post'); optional
-		'context' => 'normal', // where the meta box appear: normal (default), advanced, side; optional
-		'priority' => 'high', // order of meta box: high (default), low; optional
-		'fields' => array(), // list of meta fields (can be added by field arrays)
-		'local_images' => false, // Use local or hosted images (meta box images for add/remove)
-		'use_with_theme' => false //change path if used with theme set to true, false for a plugin or anything else for a custom path(default false).
-	);
-  
-	$meta = new AT_Meta_Box($config);
-	$meta->addText($prefix.'postcode',array('name'=> __('Postcode', 'pp'), 'style' => 'width: 50%;'));
-	$meta->addText($prefix.'url',array('name'=> __('URL', 'pp'), 'style' => 'width: 100%;'));	
-	$meta->Finish();
-	
 }
 ?>

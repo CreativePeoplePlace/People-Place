@@ -19,7 +19,7 @@ function pp_map_shortcode( $atts ) {
 	);
 
 	// have we stored a transient recently?
-	//if (false === ($points = get_transient('pp_points'))) {
+	if (false === ($points = get_transient('pp_points'))) {
 
 		// grab all of the places
 		$args = array(
@@ -42,10 +42,11 @@ function pp_map_shortcode( $atts ) {
 				$terms = wp_get_post_terms(get_the_ID(), 'pp_category', array("fields" => "all"));
 				
 				if (!empty($terms)) {
-					$icon_array = get_tax_meta($terms[0]->term_id,'_pp_icon');
-
-					if ($icon_array['src'] != '') {
-						$icon = $icon_array['src'];
+					
+					$icon_returned = get_field('_pp_icon', 'pp_category_'.$terms[0]->term_id);
+					
+					if ($icon_returned != '') {
+						$icon = $icon_returned;
 					} else {
 						$icon = PP_IMAGES_URL . '/default.png';
 					}
@@ -67,7 +68,7 @@ function pp_map_shortcode( $atts ) {
 		}
 
 		wp_reset_postdata();
-	//}
+	}
 
 	// no points? something is wrong so bail
 	if (empty($points)) return;
@@ -83,7 +84,7 @@ function pp_map_shortcode( $atts ) {
     	<label class="pp-organisations"><input type="checkbox" value="orgnaisation"/><?php _e('Organisations', 'pp'); ?></label>
     </div>
     <?php if (strpos(home_url(), PP_HOME) !== false) { ?>
-    <div id="shareme" data-text="Pin yourself on the map&hellip;"></div>
+    <div id="shareme" data-text="#PinpointYourself on the Map&hellip; http://creativepeopleplace.info/people-places"></div>
     <?php } ?>
 
     <script type="text/javascript">

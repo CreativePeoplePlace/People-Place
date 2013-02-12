@@ -1,6 +1,152 @@
 <?php 
 
 /***************************************************************
+* Function register_field_group
+* Register custom fields for ACF
+***************************************************************/
+
+if(function_exists("register_field_group")) {
+	
+	register_field_group(array (
+		'id' => '511a1ff69736e',
+		'title' => __('', 'pp'),
+		'fields' => 
+		array (
+			0 => 
+			array (
+				'key' => 'field_6',
+				'label' => 'Icon',
+				'name' => '_pp_icon',
+				'type' => 'image',
+				'order_no' => 0,
+				'instructions' => 'Upload a square .png file.',
+				'required' => 0,
+				'conditional_logic' => 
+				array (
+					'status' => 0,
+					'rules' => 
+					array (
+						0 => 
+						array (
+							'field' => 'null',
+							'operator' => '==',
+							'value' => '',
+						),
+					),
+					'allorany' => 'all',
+				),
+				'save_format' => 'url',
+				'preview_size' => 'thumbnail',
+			),
+		),
+		'location' => 
+		array (
+			'rules' => 
+			array (
+				0 => 
+				array (
+					'param' => 'ef_taxonomy',
+					'operator' => '==',
+					'value' => 'pp_category',
+					'order_no' => 0,
+				),
+			),
+			'allorany' => 'all',
+		),
+		'options' => 
+		array (
+			'position' => 'normal',
+			'layout' => 'no_box',
+			'hide_on_screen' => 
+			array (
+			),
+		),
+		'menu_order' => 0,
+	));
+	
+	register_field_group(array (
+		'id' => '511a1ff697c69',
+		'title' => __('Detail', 'pp'),
+		'fields' => 
+		array (
+			0 => 
+			array (
+				'key' => 'field_7',
+				'label' => __('Postcode','pp'),
+				'name' => '_pp_postcode',
+				'type' => 'text',
+				'order_no' => 0,
+				'instructions' => '',
+				'required' => 1,
+				'conditional_logic' => 
+				array (
+					'status' => 0,
+					'rules' => 
+					array (
+						0 => 
+						array (
+							'field' => 'null',
+							'operator' => '==',
+						),
+					),
+					'allorany' => 'all',
+				),
+				'default_value' => '',
+				'formatting' => 'none',
+			),
+			1 => 
+			array (
+				'key' => 'field_8',
+				'label' => __('URL','pp'),
+				'name' => '_pp_url',
+				'type' => 'text',
+				'order_no' => 1,
+				'instructions' => '',
+				'required' => 0,
+				'conditional_logic' => 
+				array (
+					'status' => 0,
+					'rules' => 
+					array (
+						0 => 
+						array (
+							'field' => 'null',
+							'operator' => '==',
+						),
+					),
+					'allorany' => 'all',
+				),
+				'default_value' => '',
+				'formatting' => 'none',
+			),
+		),
+		'location' => 
+		array (
+			'rules' => 
+			array (
+				0 => 
+				array (
+					'param' => 'post_type',
+					'operator' => '==',
+					'value' => 'pp',
+					'order_no' => 0,
+				),
+			),
+			'allorany' => 'all',
+		),
+		'options' => 
+		array (
+			'position' => 'normal',
+			'layout' => 'default',
+			'hide_on_screen' => 
+			array (
+			),
+		),
+		'menu_order' => 0,
+	));
+}
+
+/***************************************************************
 * Function null_map_get_coordinates
 * Retrieve coordinates for an address. Coordinates are cached using transients and a hash of the address.
 ***************************************************************/

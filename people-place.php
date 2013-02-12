@@ -12,6 +12,7 @@
 	Author URI: http://creativepeopleplace.info
 	
 	Upcoming
+	*. Change the meta box plugins again - use ACF light as ACF if ace
 	*. Create a page template that provides iframe embedding
 	*. automatic updates or host on wp.org
 	*. mail chimp sync plugin
@@ -36,15 +37,10 @@
 	
 	// load language files
 	load_plugin_textdomain( 'pp', false, dirname(PP_BASE) . '/assets/languages' );
-	
-	// load metabox library
-	if ( !class_exists( 'AT_Meta_Box' ) ) {
-		require_once( PP_PATH . '/assets/lib/metabox/meta-box-class/my-meta-box-class.php' );
-	}
-	
-	// load tax metabox library
-	if ( !class_exists( 'Tax_Meta_Class' ) ) {
-		require_once( PP_PATH . '/assets/lib/tax-metabox/Tax-meta-class/Tax-meta-class.php' );
+		
+	// load ACF lite
+	if ( !function_exists( 'get_fields' ) ) {
+		require_once( PP_PATH . '/assets/lib/acf/acf/acf-lite.php' );
 	}
 	
 	// include post type and registered meta

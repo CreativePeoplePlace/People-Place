@@ -1,6 +1,20 @@
 <?php
 
 /***************************************************************
+* Function pp_null_framework
+* Used in development only - remove ACF as required
+***************************************************************/
+
+add_filter('null_required_plugins', 'pp_null_framework');
+
+function pp_null_framework($plugins) {
+	
+	unset($plugins['acf']);
+	return $plugins;
+	
+}
+
+/***************************************************************
 * Function pp_admin_styles_script
 * Load custom admin CSS
 ***************************************************************/
@@ -166,10 +180,10 @@ function pp_geo_postcode($post_id) {
     
     // if this is not a revision
     if ( !wp_is_post_revision($post_id)) {
-   	
+   		   		
     	// get the postcode
-    	$postcode = (isset($_POST['_pp_postcode']) ? $_POST['_pp_postcode'] : '');
-    	
+    	$postcode = (isset($_POST['fields']['field_7']) ? $_POST['fields']['field_7'] : '');
+
     	if ($postcode != '') {
 	    	
 	    	// lookup the postcode
