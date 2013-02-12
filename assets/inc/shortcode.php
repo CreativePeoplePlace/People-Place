@@ -80,8 +80,25 @@ function pp_map_shortcode( $atts ) {
 
 	<div class="pp-shortcode-map-canvas" id="<?php echo $map_id; ?>" style="height: <?php echo esc_attr( $atts['height'] ); ?>; width: <?php echo esc_attr( $atts['width'] ); ?>"></div>
     <div id="pp-radios-<?php echo $map_id; ?>" class="pp-radios">
-    	<label class="pp-individuals"><input type="checkbox" value="individual"/><?php _e('Individuals', 'pp'); ?></label>
-    	<label class="pp-organisations"><input type="checkbox" value="orgnaisation"/><?php _e('Organisations', 'pp'); ?></label>
+    	<?php
+		$terms = get_terms("pp_category");
+		$count = count($terms);
+		if ( $count > 0 ){
+			foreach ( $terms as $term ) {
+			
+				$icontax = get_field('_pp_icon', 'pp_category_'.$term->term_id);
+					
+				if ($icontax != '') {
+					$icon = $icontax;
+				} else {
+					$icon = PP_IMAGES_URL . '/default.png';
+				}
+				?>
+				<label class="pp_<?php echo $term->slug; ?>"><input type="checkbox" value="<?php echo $term->slug; ?>"/><img src="<?php echo $icon; ?>" alt="<?php echo $term->name; ?>" width="30" height="30" /><?php echo $term->name; ?></label>
+				<?php
+			}
+		}
+    	?>
     </div>
     <?php if (strpos(home_url(), PP_HOME) !== false) { ?>
     <div id="shareme" data-text="#PinpointYourself on the Map&hellip; http://creativepeopleplace.info/people-places"></div>
@@ -137,7 +154,7 @@ function pp_map_shortcode( $atts ) {
 						'bound': true,
 						'clickable' : false,
 						'title' : marker.title,
-						'category' : marker.category,
+						'category' : [marker.category],
 						'icon' : new google.maps.MarkerImage(marker.icon, null, null, null, new google.maps.Size(25, 25))						
 					}).click(function() {
 					 
@@ -154,7 +171,7 @@ function pp_map_shortcode( $atts ) {
 			});		
 		}
 
-		/*jQuery('#pp-radios-<?php echo $map_id; ?> input:checkbox').click(function() {
+		jQuery('#pp-radios-<?php echo $map_id; ?> input:checkbox').click(function() {
 			
 			jQuery('#<?php echo $map_id; ?>').gmap('set', 'bounds', null);
 			
@@ -162,23 +179,22 @@ function pp_map_shortcode( $atts ) {
 			jQuery('#pp-radios-<?php echo $map_id; ?> input:checkbox:checked').each(function(i, checkbox) {
 				filters.push(jQuery(checkbox).val());
 			});
-						
+									
 			if ( filters.length > 0 ) {
 				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', { 'property': 'category', 'value': filters, 'operator': 'OR' }, function(marker, found) {
-					
-					
+										
 					if (found) {
-						//jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
+						jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
 					}
-					marker.setVisible(true); 
+					marker.setVisible(found); 
 				});
 			} else {
-				jQuery.each(jQuery('#<?php echo $map_id; ?>').gmap('get', 'markers'), function(i, marker) {
-					//jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
+				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', {}, function(marker, found) {
+					jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
 					marker.setVisible(true); 
 				});
 			}
-		});*/
+		});
 
 		pp_run_map_<?php echo $map_id ; ?>();
 

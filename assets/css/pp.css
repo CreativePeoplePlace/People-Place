@@ -20,7 +20,6 @@ contents:
 
 .pp-shortcode-map-canvas 
 	{
-	margin-bottom: 20px;
 	}
 
 .pp-shortcode-map-canvas img 
@@ -30,11 +29,26 @@ contents:
 	
 .pp-radios
 	{
-	width: 100%;
-	background: #fff;
-	margin-right: 10px;
-	border: 1px solid #717B87;
-	display: none;
+	background: #e3e3e3;
+	padding: 10px 10px 2px 10px;
+	margin-bottom: 20px;
+	}
+
+.pp-radios label
+	{
+	position: relative;
+	padding-top: 40px;
+	display: inline-block;
+	vertical-align: bottom;
+	margin-right: 8px;
+	}
+
+.pp-radios img
+	{
+	position: absolute;
+	top: -24px;
+	margin-left: -15px !important;
+	left: 50%;
 	}
 
 /* share buttons on creativepeopleplace.info */

@@ -4,7 +4,7 @@
 * Plugin URI: [github.com/CreativePeoplePlace/People-Place](https://github.com/CreativePeoplePlace/People-Place)
 * Description: A WordPress plugin for mapping creative people in places.
 * Author: Community Powered
-* Version: 0.9
+* Version: 0.91
 * Author URI: [creativepeoplepace.info](http://creativepeopleplace.info)
 * License: GNU General Public License v2.0
 * License URI: [http://www.gnu.org/licenses/gpl-2.0.html](http://www.gnu.org/licenses/gpl-2.0.html)
@@ -49,12 +49,15 @@ To help relieve database stress the map data is cached every two hours so your p
 * Create a page template that provides iframe embedding
 * Automatic updates via GitHub or we will host it on wp.org
 * Restrict one category per post (radios instead of checkboxes)
-* Filter the map by category - with icon key
 * Dated snapshots and slider to browse the snapshots
 * Help screen and plugin settings for additional customisation
 * A shortcode parameter to disable caching
 
 ## Changelog
+
+#### 0.91
+* Added filter for map categories
+* Moved metaboxes to ACF lite
 
 #### 0.9
 * Uploaded to Github - this should be considered an alpha release

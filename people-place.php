@@ -8,16 +8,14 @@
 	Plugin URI: https://github.com/CreativePeoplePlace/People-Place
 	Description: A WordPress plugin for mapping creative people in places.
 	Author: Community Powered
-	Version: 0.9
+	Version: 0.91
 	Author URI: http://creativepeopleplace.info
 	
 	Upcoming
-	*. Change the meta box plugins again - use ACF light as ACF if ace
 	*. Create a page template that provides iframe embedding
 	*. automatic updates or host on wp.org
 	*. mail chimp sync plugin
 	*. restrict to one category per post (radios instead of checkboxes)
-	*. Filter the map by category - with icon key
 	*. Snapshots and slider to browse the snapshots
 	*. Abilty to tag articles, news to the map - how can we locate these?
 	*. help screen and settings
