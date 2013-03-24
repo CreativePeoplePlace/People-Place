@@ -66,12 +66,49 @@ function pp_register_places() {
 	    'menu_icon' 					=> PP_IMAGES_URL .'/icon-post-type-places.png',
 	    'hierarchical'					=> false,
 	    'rewrite' 						=> array( "slug" => "places", "with_front" => false ),
-	    'supports'						=> array('title', 'editor', 'revisions'),
+	    'supports'						=> array('title', 'editor'),
 	    'taxonomies' 					=> array('pp'),
 	    'show_in_nav_menus' 			=> false,
 	    'has_archive' 					=> false
 	);
 	
 	register_post_type('pp', $args);
+
+	$labels = array(
+	    'name' 							=> __('Snapshots', 'null'),
+	    'singular_name' 				=> __('Snapshot', 'null'),
+	    'add_new' 						=> __('Create Snapshot', 'null'),
+	    'add_new_item' 					=> __('Create Snapshot', 'null'),
+	    'edit_item' 					=> __('Edit Snapshot', 'null'),
+	    'new_item' 						=> __('New Snapshot', 'null'),
+	    'view_item' 					=> __('View Snapshot', 'null'),
+	    'search_items' 					=> __('Search Snapshots', 'null'),
+	    'not_found' 					=> __('No Snapshots found','null'),
+	    'not_found_in_trash' 			=> __('No Snapshots found in Trash','null'),
+	    'parent_item_colon' 			=> ''
+	);
+	
+	$args = array(
+		//'menu_position' 				=> 8,
+	    'label' 						=> __('Snapshots','null'),
+	    'labels' 						=> $labels,
+	    'public' 						=> true,
+	    'publicly_queryable'			=> false,
+	    'can_export'					=> true,
+	    'show_ui' 						=> true,
+	    '_builtin' 						=> false,
+	    '_edit_link' 					=> 'post.php?post=%d',
+	    'menu_icon' 					=> get_template_directory_uri() .'/assets/images/icon-post-type-places.png',
+	    'hierarchical'					=> false,
+	    'rewrite' 						=> false, 
+	    'supports'						=> array('title'),
+	    'show_in_nav_menus' 			=> false,
+	    'has_archive' 					=> false,
+	    'show_in_nav_menus' 			=> false,
+	    'show_in_menu'					=> 'edit.php?post_type=pp',
+	    'exclude_from_search'			=> true
+	);
+	
+	register_post_type('pp_snapshot', $args);
 }
 ?>

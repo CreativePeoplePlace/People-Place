@@ -101,7 +101,7 @@ function pp_map_shortcode( $atts ) {
     	?>
     </div>
     <?php if (strpos(home_url(), PP_HOME) !== false) { ?>
-    <div id="shareme" data-text="#PinpointYourself on the Map&hellip; http://creativepeopleplace.info/people-places"></div>
+    <div id="shareme" data-text="#PinpointYourself on the Map&hellip; "></div>
     <?php } ?>
 
     <script type="text/javascript">
@@ -182,15 +182,19 @@ function pp_map_shortcode( $atts ) {
 									
 			if ( filters.length > 0 ) {
 				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', { 'property': 'category', 'value': filters, 'operator': 'OR' }, function(marker, found) {
-										
+					
+					<?php if (strpos(home_url(), PP_HOME) == false) { ?>
 					if (found) {
 						jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
 					}
+					<?php } ?>
 					marker.setVisible(found); 
 				});
 			} else {
 				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', {}, function(marker, found) {
+					<?php if (strpos(home_url(), PP_HOME) == false) { ?>
 					jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
+					<?php } ?>
 					marker.setVisible(true); 
 				});
 			}

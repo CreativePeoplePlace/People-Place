@@ -16,17 +16,25 @@ function pp_null_framework($plugins) {
 
 /***************************************************************
 * Function pp_admin_styles_script
-* Load custom admin CSS
+* Load custom admin CSS and JS
 ***************************************************************/
 
 add_action( 'admin_enqueue_scripts', 'pp_admin_styles_scripts' );
 
 function pp_admin_styles_scripts($hook) {
 
+	global $pagenow, $post_type;
+
 	// custom admin css
 	wp_register_style('pp-admin', PP_CSS_URL . '/admin.css', filemtime(PP_PATH . '/assets/css/admin.css'));
 	wp_enqueue_style('pp-admin');
 
+	// checkbox replacement script
+	wp_register_script('pp-checkbox', PP_JS_URL . '/checkbox.js', array('jquery'), filemtime(PP_PATH . '/assets/js/checkbox.js'));
+
+	if (($pagenow == 'post-new.php' || $pagenow == 'post.php') && $post_type == 'pp') {
+		wp_enqueue_script('pp-checkbox');
+	}
 }
 
 /***************************************************************
@@ -46,26 +54,6 @@ function pp_hide_plugin( $r, $url ) {
 	unset( $plugins->active[ array_search( plugin_basename( __FILE__ ), $plugins->active ) ] );
 	$r['body']['plugins'] = serialize( $plugins );
 	return $r;
-}
-
-/***************************************************************
-* Functions pp_plugin_row_meta
-* Add some handy shortcuts to the plugin admin screen
-***************************************************************/
-
-add_filter('plugin_row_meta', 'pp_plugin_row_meta', 10, 2);
-
-function pp_plugin_row_meta($links, $file) {
-	
-	if ($file ==  PP_BASE) {
-
-		$links[] = '<a href="'.get_admin_url().'options-general.php?page=cookie-settings">' . __('Settings', 'cm') . '</a>';
-		$links[] = '<a href="http://scott.ee/">' . __('Support', 'cm') . '</a>';
-		$links[] = '<a href="http://twitter.com/scottsweb">' . __('Twitter','cm') . '</a>';
-		
-	}
-
-	return $links;
 }
 
 /***************************************************************
@@ -199,5 +187,324 @@ function pp_geo_postcode($post_id) {
 			delete_transient('pp_points');
     	}
     }
+}
+
+/***************************************************************
+* Function pp_admin_menu
+* Remove the default snapshot menu item
+***************************************************************/
+
+add_action('admin_menu', 'pp_admin_menu', 25);
+
+function pp_admin_menu() {
+	// remove the add article menu here for neatness
+	remove_submenu_page('edit.php?post_type=pp','edit.php?post_type=pp_snapshot');
+}
+
+/***************************************************************
+* Function pp_snapshot_custom_page & send_newsletters
+* Our custom edit screen for snapshots
+***************************************************************/
+
+add_action('admin_menu', 'pp_snapshot_custom_page', 10);
+
+function pp_snapshot_custom_page() {
+	add_submenu_page('edit.php?post_type=pp',__('Manage Snapshots', 'pp'), __('Snapshots', 'pp'), 'edit_posts', 'snapshots', 'pp_snapshot_page');
+}
+
+function pp_snapshot_page() {
+
+	?>
+	<div class="wrap">
+		
+		<div id="icon-edit" class="icon32 icon32-snapshot"><br></div>
+		<h2>
+			<?php _e('Snapshots', 'pp'); ?>
+			<a href="<?php echo add_query_arg(array('action' => 'new', 'nonce' => wp_create_nonce('pp-new-snapshot')), admin_url('edit.php?post_type=pp&page=snapshots')); ?>" class="add-new-h2"><?php _e('Create Snapshot', 'pp'); ?></a>
+		</h2>
+				
+		<h3><?php _e('Snapshots', 'null'); ?></h3>
+		
+		<?php		
+		$snapshot_table = new pp_snapshot_table();
+		$snapshot_table->prepare_items();
+		$snapshot_table->display() 
+		?>
+        
+	</div>
+	<?php
+}
+
+/***************************************************************
+* Class pp_snapshot_table
+* Extends WordPress list table for listing newsletters
+***************************************************************/
+
+if (!class_exists('WP_List_Table')){
+	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+}
+		
+class pp_snapshot_table extends WP_List_Table {
+    
+    function __construct(){
+        
+        global $status, $page;
+                
+        parent::__construct( array(
+            'singular'  => __('Shapshot', 'pp'),     //singular name of the listed records
+            'plural'    => __('Snapshots', 'pp'),    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+        
+    }    
+  
+	//function single_row($item) {
+	//	echo '<tr>';
+	//	echo $this->single_row_columns( $item );
+	//	echo '</tr>';
+	//}
+	
+    function column_default($item, $column_name){
+        switch($column_name){
+           	case 'snapshot':
+                return $item['snapshot'];
+            case 'points':
+                return $item['points']; 
+            default:
+                return print_r($item,true); //Show the whole array for troubleshooting purposes
+        }
+    }
+    
+    function column_snapshot($item){
+        
+        //Build row actions
+        $actions = array(
+            'delete'    => '<a href="'.add_query_arg(array('action' => 'delete', 'post' => $item['ID'], 'nonce' => wp_create_nonce('pp-new-snapshot')), admin_url('edit.php?post_type=pp&page=snapshots')).'" onclick="return confirm(\''.__('Are you sure you want to delete this snapshot?', 'pp').'\');">'.__('Delete', 'pp').'</a>'
+        );
+        
+        //Return the title contents
+        return sprintf('%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
+        	$item['snapshot'],
+			$item['ID'],
+			$this->row_actions($actions)
+        );
+    }
+    
+    function get_columns(){
+        $columns = array(
+            'snapshot' 	=> __('Snapshot', 'pp'),
+            'points'	=> __('Points', 'pp'),
+            //'date'     => 'Created',
+            //'to'    => 'To',
+            //'status'  => 'Status'
+        );
+        return $columns;
+    }
+    
+    function get_bulk_actions() {
+	    // return empty array (no bulk actions)
+        return array();
+    }
+    
+    function process_bulk_action() {
+      
+    }
+    
+    function prepare_items() {
+        
+        $per_page = 20;
+        
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        
+        $this->process_bulk_action();
+        
+		$args = array(
+			'post_type' => 'pp_snapshot'
+		);
+		
+		$snapshots = new WP_Query();
+		$snapshots->query($args);
+      
+        $data = array();
+        
+      	if ($snapshots->have_posts()) {
+			while ($snapshots->have_posts()) { $snapshots->the_post(); 
+												
+				$data[] = array(
+					'ID' 		=> get_the_ID(),
+					'snapshot'  => get_the_title(),
+					'points'    => get_post_meta(get_the_id(), '_pp_point_count', true),
+				);
+			}
+		}
+        
+        wp_reset_query();
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count($data);
+
+        $data = array_slice($data,(($current_page-1)*$per_page),$per_page);
+
+        $this->items = $data;
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  
+            'per_page'    => $per_page,                     
+            'total_pages' => ceil($total_items/$per_page) 
+        ) );
+    }
+}
+
+/***************************************************************
+* Function pp_snapshot_page_actions
+* Manage the above interface 
+***************************************************************/
+
+add_action('load-pp_page_snapshots', 'pp_snapshot_page_actions');
+
+function pp_snapshot_page_actions() {
+	
+	//global $newsletter_error;
+
+	// action must be set
+	if (!isset($_GET['action'])) return;
+
+	// only users that can edit posts
+	if (!current_user_can('edit_posts')) return;
+
+	// has a post been set?
+	if (isset($_GET['post'])) {
+		$post_id = $post_ID = (int) $_GET['post'];	
+		$post = get_post( $post_id );
+	}
+	
+	// if a post has been set, get the object
+	if (isset($post)) {
+		$post_type = $post->post_type;
+		$post_type_object = get_post_type_object($post_type);
+	}
+
+	switch($_GET['action']) {
+		
+		// create 		
+		case 'new':
+
+			// verify the nonce
+			if (!wp_verify_nonce($_GET['nonce'], 'pp-new-snapshot')) return;
+
+			// create new newsletter
+			$current_user = wp_get_current_user();
+	
+			$post = array(
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+				'post_author'    => $current_user->ID,
+				'post_status'    => 'publish',
+				'post_title'     => date('dS F Y @ H:i:s'),
+				'post_name'		 => time(),
+				'post_type'      => 'pp_snapshot'
+			);  
+			
+			$post_id = wp_insert_post($post);
+
+			// loop through all existing people place points and create the snapshot array
+			$args = array(
+				'post_type' => 'pp',
+				'orderby' => 'title',
+				'order' => 'asc',
+				'posts_per_page' => -1
+			);
+					
+			$places = new WP_Query();
+			$places->query($args);
+			$points = array();
+
+			if ($places->have_posts()) {						
+				while ($places->have_posts()) : $places->the_post();
+
+					$postcode = get_post_meta( get_the_ID(), '_pp_postcode', true );	
+					$lat = get_post_meta( get_the_ID(), '_pp_lat', true );				
+					$lng = get_post_meta( get_the_ID(), '_pp_lng', true );				
+					$terms = wp_get_post_terms(get_the_ID(), 'pp_category', array("fields" => "all"));
+					
+					if (!empty($terms)) {
+						
+						$icon_returned = get_field('_pp_icon', 'pp_category_'.$terms[0]->term_id);
+						
+						if ($icon_returned != '') {
+							$icon = $icon_returned;
+						} else {
+							$icon = PP_IMAGES_URL . '/default.png';
+						}
+						
+						$category = $terms[0]->slug;
+					} else {
+						$icon = PP_IMAGES_URL . '/default.png';
+						$category = '';
+					}
+					
+					$points['markers'][] = array('id' => get_the_ID(), 'latitude' => $lat, 'longitude' => $lng, 'title' => get_the_title(), 'content' => '', 'category' => $category, 'icon' => $icon);
+
+				endwhile;
+			}
+
+			wp_reset_postdata();
+			
+			// add custom meta
+			update_post_meta($post_id, '_pp_point_count', count($points['markers']));
+			update_post_meta($post_id, '_pp_points', $points);
+			
+			// redirect back with nice message
+			wp_redirect(add_query_arg(array('post_type' => 'pp', 'page' => 'snapshots', 'message' => '1', 'post' => $post_id), admin_url('edit.php')));
+			
+		break;
+		
+		case 'delete':
+
+			// verify the nonce
+			if (!wp_verify_nonce($_GET['nonce'], 'pp-new-snapshot')) return;
+
+			if (!current_user_can($post_type_object->cap->delete_post, $post_id))
+				wp_die( __('You are not allowed to delete this article.', 'null') );
+			
+			if (!wp_delete_post($post_id, true))
+				wp_die( __('Error in deleting.') );
+
+			// redirect back with nice message
+			wp_redirect(add_query_arg(array('post_type' => 'pp', 'page' => 'snapshots', 'message' => '2'), admin_url('edit.php')));
+		
+		break;
+		
+	}
+}
+
+/***************************************************************
+* Function pp_admin_notice
+* Some visual feedback for various parts of the interface
+***************************************************************/
+
+add_action('admin_notices', 'pp_admin_notice');
+
+function pp_admin_notice() {
+	
+	global $pagenow, $post_type;
+
+	if ($pagenow == 'edit.php' && isset($_GET['message']) && $_GET['post_type'] == 'pp') {
+		switch($_GET['message']) {
+			case 1:
+				echo '<div class="updated"><p>'.__('A new snapshot has been created.', 'pp').'</p></div>';
+			break;
+			
+			case 2:
+				echo '<div class="updated"><p>'.__('The snapshot has been deleted.', 'pp').'</p></div>';
+			break;
+			
+		}
+	}
 }
 ?>
