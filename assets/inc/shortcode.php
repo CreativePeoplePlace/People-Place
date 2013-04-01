@@ -13,13 +13,13 @@ function pp_map_shortcode( $atts ) {
 		array(
 			'width' 	=> '100%',
 			'height' 	=> '500px',
-			'cache'		=> true,
+			'cache'		=> 'true',
 		),
 		$atts
 	);
 
 	// have we stored a transient recently?
-	if (false === ($points = get_transient('pp_points'))) {
+	if (false === ($points = get_transient('pp_points')) || $atts['cache'] == "false") {
 
 		// grab all of the places
 		$args = array(
@@ -76,7 +76,27 @@ function pp_map_shortcode( $atts ) {
 	$map_id = esc_attr(uniqid( 'pp_map_' )); // generate a unique ID for this map
 	
 	ob_start(); 
+
+	// loop through all existing snapshots
+	$args = array(
+		'post_type' => 'pp_snapshot',
+		'posts_per_page' => -1
+	);
+			
+	$snapshots = new WP_Query();
+	$snapshots->query($args);
+	if ($snapshots->have_posts()) {		
 	?>
+	<div class="pp-snapshots">
+		<label for="snapshot-<?php echo $map_id; ?>"><?php _e('Browse Snapshots', 'pp'); ?></label>
+		<select id="snapshot-<?php echo $map_id; ?>" name="snapshot">
+			<option value="today" selected="selected"><?php _e('Latest', 'pp'); ?></option>
+			<?php while ($snapshots->have_posts()) : $snapshots->the_post(); ?>
+			<option value="<?php the_ID(); ?>"><?php the_time(get_option('date_format')) ?></option>
+			<?php endwhile; ?>
+		</select>
+	</div>
+	<?php } ?>
 
 	<div class="pp-shortcode-map-canvas" id="<?php echo $map_id; ?>" style="height: <?php echo esc_attr( $atts['height'] ); ?>; width: <?php echo esc_attr( $atts['width'] ); ?>"></div>
     <div id="pp-radios-<?php echo $map_id; ?>" class="pp-radios">
@@ -201,6 +221,58 @@ function pp_map_shortcode( $atts ) {
 		});
 
 		pp_run_map_<?php echo $map_id ; ?>();
+
+		jQuery('#snapshot-<?php echo $map_id; ?>').on('change', function() {
+
+			// clean up selections
+			jQuery('#pp-radios-<?php echo $map_id; ?> input:checkbox').attr('checked', false);
+
+			var senddata = {
+				action: 'pp_ajax',
+				post: jQuery(this).val(),
+				nonce: '<?php echo wp_create_nonce('pp_ajax_nonce'); ?>'
+			};
+
+			jQuery.ajax({
+				type: 'POST',
+				url: '<?php echo admin_url('admin-ajax.php'); ?>', 
+				dataType: 'json', 
+				data: senddata, 
+				success: function(data) {
+				
+					jQuery('#<?php echo $map_id; ?>').gmap('clear', 'markers');
+					//jQuery('#map').gmap('refresh');
+					
+					var bounds = new google.maps.LatLngBounds();
+
+					jQuery.each(data.markers, function(i, marker) {
+
+						var position = new google.maps.LatLng(marker.latitude, marker.longitude)
+	 							
+						bounds.extend(position);
+								
+						jQuery('#<?php echo $map_id; ?>').gmap('addMarker', { 
+							'id': marker.id,
+							'position': position, 
+							'bound': true,
+							'clickable' : false,
+							'title' : marker.title,
+							'category' : [marker.category],
+							'icon' : new google.maps.MarkerImage(marker.icon, null, null, null, new google.maps.Size(25, 25))						
+						}).click(function() {
+						 
+							// grab the id of the marker
+							var clicked = this.id;
+							
+						});	
+					});
+
+					<?php if (strpos(home_url(), PP_HOME) == false) { ?>
+					//jQuery('#<?php echo $map_id; ?>').gmap('get', 'map').fitBounds(bounds);
+					<?php } ?>
+				}
+			});
+		});
 
 		<?php if (strpos(home_url(), PP_HOME) !== false) { ?>
 

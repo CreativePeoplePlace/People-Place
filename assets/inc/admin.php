@@ -221,9 +221,7 @@ function pp_snapshot_page() {
 			<?php _e('Snapshots', 'pp'); ?>
 			<a href="<?php echo add_query_arg(array('action' => 'new', 'nonce' => wp_create_nonce('pp-new-snapshot')), admin_url('edit.php?post_type=pp&page=snapshots')); ?>" class="add-new-h2"><?php _e('Create Snapshot', 'pp'); ?></a>
 		</h2>
-				
-		<h3><?php _e('Snapshots', 'null'); ?></h3>
-		
+						
 		<?php		
 		$snapshot_table = new pp_snapshot_table();
 		$snapshot_table->prepare_items();
@@ -368,8 +366,6 @@ add_action('load-pp_page_snapshots', 'pp_snapshot_page_actions');
 
 function pp_snapshot_page_actions() {
 	
-	//global $newsletter_error;
-
 	// action must be set
 	if (!isset($_GET['action'])) return;
 
@@ -395,6 +391,9 @@ function pp_snapshot_page_actions() {
 
 			// verify the nonce
 			if (!wp_verify_nonce($_GET['nonce'], 'pp-new-snapshot')) return;
+
+			// delete current transient
+			delete_transient('pp_points');
 
 			// create new newsletter
 			$current_user = wp_get_current_user();
@@ -502,8 +501,38 @@ function pp_admin_notice() {
 			case 2:
 				echo '<div class="updated"><p>'.__('The snapshot has been deleted.', 'pp').'</p></div>';
 			break;
-			
 		}
 	}
+}
+
+/***************************************************************
+* Function pp_ajax_handler
+* Handle front end ajax requests
+***************************************************************/
+
+add_action('wp_ajax_pp_ajax', 'pp_ajax_handler');
+add_action('wp_ajax_nopriv_pp_ajax', 'pp_ajax_handler');
+
+function pp_ajax_handler() {
+
+	if (!isset($_POST['nonce'])) return;
+	if (!wp_verify_nonce( $_POST['nonce'],'pp_ajax_nonce')) return;
+
+	$return_points = get_transient('pp_points');
+
+	if ($_POST['post'] != 0) {
+		
+		$snapshot = get_post($_POST['post']);
+
+		if ($snapshot->post_type == "pp_snapshot") {
+
+			$return_points = get_post_meta($snapshot->ID, '_pp_points', true);	
+		}
+	}
+		
+	echo json_encode($return_points);				
+
+	die();
+
 }
 ?>

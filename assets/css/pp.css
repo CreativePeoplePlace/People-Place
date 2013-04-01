@@ -22,6 +22,26 @@ contents:
 	{
 	}
 
+.pp-snapshots
+	{
+	background: #e3e3e3;
+	padding: 10px 10px 0px 10px;
+	overflow: hidden;
+	}
+
+.pp-snapshots label
+	{
+	float: left;
+	width: 30%;
+	padding-top: 13px;
+	}
+
+.pp-snapshots select
+	{
+	float: right;
+	width: 70%;
+	}
+
 .pp-shortcode-map-canvas img 
 	{
 	max-width: inherit;

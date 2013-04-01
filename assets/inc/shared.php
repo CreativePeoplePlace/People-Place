@@ -147,7 +147,7 @@ if(function_exists("register_field_group")) {
 }
 
 /***************************************************************
-* Function null_map_get_coordinates
+* Function pp_map_get_coordinates
 * Retrieve coordinates for an address. Coordinates are cached using transients and a hash of the address.
 ***************************************************************/
 
@@ -200,5 +200,109 @@ function pp_map_get_coordinates($address, $force_refresh = false) {
     }
 
     return $data;
+}
+
+/***************************************************************
+* Function pp_cron_schedules
+* Add a weekly schedule to WordPress cron
+***************************************************************/
+
+add_filter( 'cron_schedules', 'pp_cron_schedules', 20);
+
+function pp_cron_schedules( $param ) {
+	return array(
+		'fortnightly' => array('interval' => 1209600, 'display' => __('Once Fortnightly', 'pp')),
+	);
+}
+
+/***************************************************************
+* Function pp_cron_events
+* Register custom cron events 
+***************************************************************/
+
+add_action('init', 'pp_cron_events');
+
+function pp_cron_events() {
+	
+	// schedule a weekly transient clean up once a week
+	if (!wp_next_scheduled('pp_snapshot')) {
+		wp_schedule_event( time()+240, 'fortnightly', 'pp_snapshot' );
+	}
+	
+	// use to debug the scheduled events above
+	//wp_clear_scheduled_hook('pp_snapshot');
+	//do_action('pp_snapshot');
+}
+
+/***************************************************************
+* Function pp_create_snapshot
+* Clean up expired transients in WordPress http://bit.ly/ea4jek
+***************************************************************/
+
+add_action('pp_snapshot', 'pp_create_snapshot');
+
+function pp_create_snapshot() {
+
+	// delete current transient
+	delete_transient('pp_points');
+
+	$post = array(
+		'comment_status' => 'closed',
+		'ping_status'    => 'closed',
+		'post_status'    => 'publish',
+		'post_title'     => date('dS F Y @ H:i:s'),
+		'post_name'		 => time(),
+		'post_type'      => 'pp_snapshot'
+	);  
+	
+	$post_id = wp_insert_post($post);
+
+	// loop through all existing people place points and create the snapshot array
+	$args = array(
+		'post_type' => 'pp',
+		'orderby' => 'title',
+		'order' => 'asc',
+		'posts_per_page' => -1
+	);
+			
+	$places = new WP_Query();
+	$places->query($args);
+	$points = array();
+
+	if ($places->have_posts()) {						
+		while ($places->have_posts()) : $places->the_post();
+
+			$postcode = get_post_meta( get_the_ID(), '_pp_postcode', true );	
+			$lat = get_post_meta( get_the_ID(), '_pp_lat', true );				
+			$lng = get_post_meta( get_the_ID(), '_pp_lng', true );				
+			$terms = wp_get_post_terms(get_the_ID(), 'pp_category', array("fields" => "all"));
+			
+			if (!empty($terms)) {
+				
+				$icon_returned = get_field('_pp_icon', 'pp_category_'.$terms[0]->term_id);
+				
+				if ($icon_returned != '') {
+					$icon = $icon_returned;
+				} else {
+					$icon = PP_IMAGES_URL . '/default.png';
+				}
+				
+				$category = $terms[0]->slug;
+			} else {
+				$icon = PP_IMAGES_URL . '/default.png';
+				$category = '';
+			}
+			
+			$points['markers'][] = array('id' => get_the_ID(), 'latitude' => $lat, 'longitude' => $lng, 'title' => get_the_title(), 'content' => '', 'category' => $category, 'icon' => $icon);
+
+		endwhile;
+	}
+
+	wp_reset_postdata();
+	
+	// add custom meta
+	update_post_meta($post_id, '_pp_point_count', count($points['markers']));
+	update_post_meta($post_id, '_pp_points', $points);
+
 }
 ?>
