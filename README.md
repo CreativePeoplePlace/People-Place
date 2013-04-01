@@ -48,12 +48,10 @@ To help relieve database stress the map data is cached every two hours so your p
 
 ## Planned Features
 
-* Create a page template that provides iframe embedding
 * Automatic updates via GitHub or we will host it on wp.org
-* Dated snapshots and slider to browse the snapshots
-* Help screen and plugin settings for additional customisation
-* A shortcode parameter to disable caching
-* A shortcode parameter to pick default categories
+* Help screen and plugin settings for additional customisation (turn off snapshots)
+* A shortcode parameter to pick default categories for the embed
+* A new default look for the shortcode/embed
 
 ## Changelog
 
