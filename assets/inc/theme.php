@@ -28,7 +28,7 @@ function pp_theme_styles_scripts() {
 
 /***************************************************************
 * Function pp_template_redirect
-* Disable single view for this post type - might have custom post type at later date
+* Disable single view for this post type - might enable at later date
 ***************************************************************/
 
 add_action( 'template_redirect', 'pp_template_redirect' );
@@ -37,8 +37,26 @@ function pp_template_redirect() {
     global $wp, $wp_query;
 
     if ( isset( $wp->query_vars['post_type'] ) && $wp->query_vars['post_type'] == 'pp' && is_single()) {
-  		wp_die('Disabled');
+  		wp_die(__('Disabled','pp'));
     }
 }
 
+/***************************************************************
+* Function pp_iframe_redirect
+* Load the iframe code when ?pp_iframe=true is added as a query string
+***************************************************************/
+
+add_action( 'template_redirect', 'pp_iframe_redirect' );
+
+function pp_iframe_redirect() {
+    global $wp, $wp_query;
+
+ 	if (isset($_GET['pp_iframe'])) {
+		
+		if ($_GET['pp_iframe'] == 'true') {
+			include_once(PP_PATH . '/iframe.php');
+			exit();
+		}
+	}
+}
 ?>
