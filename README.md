@@ -2,9 +2,9 @@
 
 * Plugin Name: People Place
 * Plugin URI: [github.com/CreativePeoplePlace/People-Place](https://github.com/CreativePeoplePlace/People-Place)
-* Description: A WordPress plugin for mapping Creative People and Places.
+* Description: A WordPress plugin for mapping Creative People and Places
 * Author: Community Powered
-* Version: 0.91
+* Version: 0.92
 * Author URI: [creativepeoplepace.info](http://creativepeopleplace.info)
 * License: GNU General Public License v2.0
 * License URI: [http://www.gnu.org/licenses/gpl-2.0.html](http://www.gnu.org/licenses/gpl-2.0.html)
@@ -16,7 +16,9 @@ People Place is an open source WordPress plugin that allows you to map groups of
 
 It is designed to track creative events, people and organisation across specific regions of the UK as a way of monitoring local community activity, ideas and culture. It is quite likely you will find many other uses for it too. 
 
-A sister plugin is in development that syncs a mailchimp mailing list with the map.
+A [sister plugin](https://github.com/CreativePeoplePlace/People-Place-Sync) is in development that syncs a MailChimp mailing list with the map.
+
+Help support development by [purchasing this plugin](https://gumroad.com/l/people-place).
 
 ## Attention!
 
@@ -48,12 +50,18 @@ To help relieve database stress the map data is cached every two hours so your p
 
 * Create a page template that provides iframe embedding
 * Automatic updates via GitHub or we will host it on wp.org
-* Restrict one category per post (radios instead of checkboxes)
 * Dated snapshots and slider to browse the snapshots
 * Help screen and plugin settings for additional customisation
 * A shortcode parameter to disable caching
+* A shortcode parameter to pick default categories
 
 ## Changelog
+
+#### 0.92
+* Restrict points to one category (only one marker image per place)
+* Snapshots (snapshot slider coming in next version)
+* Disable revisions support to keep the database size down
+* Fix Google Maps postcode API lookup
 
 #### 0.91
 * Added filter for map categories

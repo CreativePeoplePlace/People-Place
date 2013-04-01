@@ -164,7 +164,6 @@ function pp_geo_postcode($post_id) {
     if (get_post_type($post_id) != 'pp') {
 	    return;
     }
-   
     
     // if this is not a revision
     if ( !wp_is_post_revision($post_id)) {

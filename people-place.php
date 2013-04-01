@@ -6,19 +6,21 @@
 	
 	Plugin Name: People Place
 	Plugin URI: https://gumroad.com/l/people-place
-	Description: A WordPress plugin for mapping creative people in places.
+	Description: A WordPress plugin for mapping creative people in places
 	Author: Community Powered
-	Version: 0.91
+	Version: 0.92
 	Author URI: http://creativepeopleplace.info
-	
+
 	Upcoming
 	*. Create a page template that provides iframe embedding
 	*. automatic updates or host on wp.org
 	*. mail chimp sync plugin
-	*. Snapshots and slider to browse the snapshots
+	*. Snapshots slider to browse the snapshots
 	*. Abilty to tag articles, news to the map - how can we locate these?
 	*. help screen and settings
 	*. Shortcode parameter to disable caching
+	*. Shortcode parameter to pick default categories (how will this work with snapshots?)
+
 	
 */
 	

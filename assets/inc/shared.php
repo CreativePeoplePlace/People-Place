@@ -15,11 +15,11 @@ if(function_exists("register_field_group")) {
 			0 => 
 			array (
 				'key' => 'field_6',
-				'label' => 'Icon',
+				'label' => __('Icon','pp'),
 				'name' => '_pp_icon',
 				'type' => 'image',
 				'order_no' => 0,
-				'instructions' => 'Upload a square .png file.',
+				'instructions' => __('Upload a square .png file.', 'pp'),
 				'required' => 0,
 				'conditional_logic' => 
 				array (
@@ -151,51 +151,47 @@ if(function_exists("register_field_group")) {
 * Retrieve coordinates for an address. Coordinates are cached using transients and a hash of the address.
 ***************************************************************/
 
-function pp_map_get_coordinates( $address, $force_refresh = false ) {
+function pp_map_get_coordinates($address, $force_refresh = false) {
 	
-    $address_hash = md5( $address );
+    $address_hash = md5($address);
 
-    $coordinates = get_transient( $address_hash );
+    $coordinates = get_transient($address_hash);
 
     if ($force_refresh || $coordinates === false) {
-    	
-    	$url 		= 'http://maps.google.com/maps/geo?q=' . urlencode($address) . '&output=xml';
+
+		$url 		= 'http://maps.google.com/maps/api/geocode/xml?address=' . urlencode($address) . '&sensor=false';
      	$response 	= wp_remote_get( $url );
 
-     	if( is_wp_error( $response ) )
+     	if (is_wp_error($response))
      		return;
 
-     	$xml = wp_remote_retrieve_body( $response );
+     	$xml = wp_remote_retrieve_body($response);
 
-     	if( is_wp_error( $xml ) )
+     	if (is_wp_error($xml))
      		return;
 
-		if ( $response['response']['code'] == 200 ) {
+		if ($response['response']['code'] == 200) {
 
-			$data = new SimpleXMLElement( $xml );
+			$data = new SimpleXMLElement($xml);
 
-			if ( $data->Response->Status->code == 200 ) {
+			if ($data->status == 'OK') {
 
-			  	$coordinates = $data->Response->Placemark->Point->coordinates;
-
-			  	//Placemark->Point->coordinates;
-			  	$coordinates 			= explode(',', $coordinates[0]);
-			  	$cache_value['lat'] 	= $coordinates[1];
-			  	$cache_value['lng'] 	= $coordinates[0];
-			  	$cache_value['address'] = (string) $data->Response->Placemark->address[0];
+			  	$cache_value['lat'] 	= (float) $data->result->geometry->location->lat;
+			  	$cache_value['lng'] 	= (float) $data->result->geometry->location->lng;
+			  	$cache_value['address'] = (string) $data->result->formatted_address;
 
 			  	// cache coordinates for 3 months
 			  	set_transient($address_hash, $cache_value, 3600*24*30*3);
 			  	$data = $cache_value;
 
-			} elseif ($data->Response->Status->code == 602) {
-			  	return; //sprintf( __( 'Unable to parse entered address. API response code: %s', 'null' ), @$data->Response->Status->code );
+			} elseif ($data->status == 602) {
+			  	return sprintf( __( 'Unable to parse entered address. API response code: %s', 'pp' ), @$data->Response->Status->code );
 			} else {
-			   	return; //sprintf( __( 'XML parsing error. Please try again later. API response code: %s', 'null' ), @$data->Response->Status->code );
+			   	return sprintf( __( 'XML parsing error. Please try again later. API response code: %s', 'pp' ), @$data->Response->Status->code );
 			}
 
 		} else {
-		 	return; //__( 'Unable to contact Google API service.', 'null' );
+		 	return __( 'Unable to contact Google API service.', 'pp' );
 		}
 
     } else {
