@@ -268,7 +268,7 @@ function pp_map_shortcode( $atts ) {
 					});
 
 					<?php if (strpos(home_url(), PP_HOME) == false) { ?>
-					//jQuery('#<?php echo $map_id; ?>').gmap('get', 'map').fitBounds(bounds);
+					jQuery('#<?php echo $map_id; ?>').gmap('get', 'map').fitBounds(bounds);
 					<?php } ?>
 				}
 			});
