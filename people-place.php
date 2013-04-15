@@ -16,12 +16,12 @@
 	*. help screen and settings
 	*. TinyMCE button
 	*. Better default styles for map/shortcode
-
+	*. allow iframe to be overwitten in theme (https://github.com/pippinsplugins/Easy-Digital-Downloads/blob/master/includes/template-functions.php#L431)
+	
 	In Discussion
 	*. Shortcode parameter to pick default categories (how will this work with snapshots?)
 	*. Ability to tag articles, news, events to the map - how can we locate these?
 
-	
 */
 	
 	// useful constants 

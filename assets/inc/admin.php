@@ -427,7 +427,8 @@ function pp_snapshot_page_actions() {
 
 					$postcode = get_post_meta( get_the_ID(), '_pp_postcode', true );	
 					$lat = get_post_meta( get_the_ID(), '_pp_lat', true );				
-					$lng = get_post_meta( get_the_ID(), '_pp_lng', true );				
+					$lng = get_post_meta( get_the_ID(), '_pp_lng', true );
+					$url = get_post_meta( get_the_ID(), '_pp_url', true );				
 					$terms = wp_get_post_terms(get_the_ID(), 'pp_category', array("fields" => "all"));
 					
 					if (!empty($terms)) {
@@ -446,7 +447,7 @@ function pp_snapshot_page_actions() {
 						$category = '';
 					}
 					
-					$points['markers'][] = array('id' => get_the_ID(), 'latitude' => $lat, 'longitude' => $lng, 'title' => get_the_title(), 'content' => '', 'category' => $category, 'icon' => $icon);
+					$points['markers'][] = array('id' => get_the_ID(), 'latitude' => $lat, 'longitude' => $lng, 'title' => get_the_title(), 'content' => '', 'category' => $category, 'icon' => $icon, 'url' => $url);
 
 				endwhile;
 			}

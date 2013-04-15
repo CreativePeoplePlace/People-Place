@@ -22,36 +22,49 @@ contents:
 	{
 	}
 
+.pp-controls
+	{
+	position: relative;
+	background: #e3e3e3;
+	}
+
 .pp-snapshots
 	{
-	background: #e3e3e3;
 	padding: 10px 10px 0px 10px;
 	overflow: hidden;
+	margin-bottom: 20px;
 	}
 
 .pp-snapshots label
 	{
-	float: left;
-	width: 30%;
-	padding-top: 13px;
+	display: none;
 	}
 
 .pp-snapshots select
 	{
-	float: right;
-	width: 70%;
+	width: 100%;
 	}
+
+@media only screen and (min-width: 800px) 
+	{
+	.pp-snapshots select
+		{
+		position: absolute;
+		top: 25px;
+		right: 20px;
+		width: 200px;
+		}
+	} 
 
 .pp-shortcode-map-canvas img 
 	{
-	max-width: inherit;
+	max-width: inherit !important;
 	}
 	
 .pp-radios
 	{
 	background: #e3e3e3;
 	padding: 10px 10px 2px 10px;
-	margin-bottom: 20px;
 	}
 
 .pp-radios label

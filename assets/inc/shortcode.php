@@ -36,9 +36,11 @@ function pp_map_shortcode( $atts ) {
 		if ($places->have_posts()) {						
 			while ($places->have_posts()) : $places->the_post();
 
+				// add URL
 				$postcode = get_post_meta( get_the_ID(), '_pp_postcode', true );	
 				$lat = get_post_meta( get_the_ID(), '_pp_lat', true );				
-				$lng = get_post_meta( get_the_ID(), '_pp_lng', true );				
+				$lng = get_post_meta( get_the_ID(), '_pp_lng', true );
+				$url = get_post_meta( get_the_ID(), '_pp_url', true );						
 				$terms = wp_get_post_terms(get_the_ID(), 'pp_category', array("fields" => "all"));
 				
 				if (!empty($terms)) {
@@ -57,7 +59,7 @@ function pp_map_shortcode( $atts ) {
 					$category = '';
 				}
 				
-				$points['markers'][] = array('id' => get_the_ID(), 'latitude' => $lat, 'longitude' => $lng, 'title' => get_the_title(), 'content' => '', 'category' => $category, 'icon' => $icon);
+				$points['markers'][] = array('id' => get_the_ID(), 'latitude' => $lat, 'longitude' => $lng, 'title' => get_the_title(), 'content' => '', 'category' => $category, 'icon' => $icon, 'url' => $url);
 
 			endwhile;
 		}
@@ -77,28 +79,10 @@ function pp_map_shortcode( $atts ) {
 	
 	ob_start(); 
 
-	// loop through all existing snapshots
-	$args = array(
-		'post_type' => 'pp_snapshot',
-		'posts_per_page' => -1
-	);
-			
-	$snapshots = new WP_Query();
-	$snapshots->query($args);
-	if ($snapshots->have_posts()) {		
 	?>
-	<div class="pp-snapshots">
-		<label for="snapshot-<?php echo $map_id; ?>"><?php _e('Browse Snapshots', 'pp'); ?></label>
-		<select id="snapshot-<?php echo $map_id; ?>" name="snapshot">
-			<option value="today" selected="selected"><?php _e('Latest', 'pp'); ?></option>
-			<?php while ($snapshots->have_posts()) : $snapshots->the_post(); ?>
-			<option value="<?php the_ID(); ?>"><?php the_time(get_option('date_format')) ?></option>
-			<?php endwhile; ?>
-		</select>
-	</div>
-	<?php } ?>
 
 	<div class="pp-shortcode-map-canvas" id="<?php echo $map_id; ?>" style="height: <?php echo esc_attr( $atts['height'] ); ?>; width: <?php echo esc_attr( $atts['width'] ); ?>"></div>
+    <div class="pp-controls">
     <div id="pp-radios-<?php echo $map_id; ?>" class="pp-radios">
     	<?php
 		$terms = get_terms("pp_category");
@@ -120,6 +104,32 @@ function pp_map_shortcode( $atts ) {
 		}
     	?>
     </div>
+	
+	<?php 
+
+	// loop through all existing snapshots
+	$args = array(
+		'post_type' => 'pp_snapshot',
+		'posts_per_page' => -1
+	);
+			
+	$snapshots = new WP_Query();
+	$snapshots->query($args);
+	if ($snapshots->have_posts()) {		
+	?>
+	<div class="pp-snapshots">
+		<label for="snapshot-<?php echo $map_id; ?>"><?php _e('Browse Snapshots', 'pp'); ?></label>
+		<select id="snapshot-<?php echo $map_id; ?>" name="snapshot">
+			<option value="today" selected="selected"><?php _e('Browse Snapshots', 'pp'); ?></option>
+			<option value="today"><?php _e('Latest', 'pp'); ?></option>
+			<?php while ($snapshots->have_posts()) : $snapshots->the_post(); ?>
+			<option value="<?php the_ID(); ?>"><?php the_time(get_option('date_format')) ?></option>
+			<?php endwhile; ?>
+		</select>
+	</div>
+	<?php } ?>
+	</div>
+	
     <?php if (strpos(home_url(), PP_HOME) !== false) { ?>
     <div id="shareme" data-text="#PinpointYourself on the Map&hellip; "></div>
     <?php } ?>
@@ -167,20 +177,23 @@ function pp_map_shortcode( $atts ) {
 					var position = new google.maps.LatLng(marker.latitude, marker.longitude)
  							
 					bounds.extend(position);
+
+					if (marker.url != '') {
+						var clickable = true;
+					} else {
+						var clickable = false;
+					}
 							
 					jQuery('#<?php echo $map_id; ?>').gmap('addMarker', { 
 						'id': marker.id,
 						'position': position, 
 						'bound': true,
-						'clickable' : false,
+						'clickable' : clickable,
 						'title' : marker.title,
 						'category' : [marker.category],
 						'icon' : new google.maps.MarkerImage(marker.icon, null, null, null, new google.maps.Size(25, 25))						
 					}).click(function() {
-					 
-						// grab the id of the marker
-						var clicked = this.id;
-						
+						jQuery('#<?php echo $map_id; ?>').gmap('openInfoWindow', {'content': '<a href="'+marker.url+'" target="_blank">'+marker.url+'</a>'}, this ); 
 					});	
 				});
 
@@ -250,20 +263,27 @@ function pp_map_shortcode( $atts ) {
 						var position = new google.maps.LatLng(marker.latitude, marker.longitude)
 	 							
 						bounds.extend(position);
-								
+
+						if (marker.url) {
+							if (marker.url != '') {
+								var clickable = true;
+							} else {
+								var clickable = false;
+							}
+						} else {
+							clickable = false;
+						}
+
 						jQuery('#<?php echo $map_id; ?>').gmap('addMarker', { 
 							'id': marker.id,
 							'position': position, 
 							'bound': true,
-							'clickable' : false,
+							'clickable' : clickable,
 							'title' : marker.title,
 							'category' : [marker.category],
 							'icon' : new google.maps.MarkerImage(marker.icon, null, null, null, new google.maps.Size(25, 25))						
 						}).click(function() {
-						 
-							// grab the id of the marker
-							var clicked = this.id;
-							
+							jQuery('#<?php echo $map_id; ?>').gmap('openInfoWindow', {'content': '<a href="'+marker.url+'" target="_blank">'+marker.url+'</a>'}, this ); 
 						});	
 					});
 
