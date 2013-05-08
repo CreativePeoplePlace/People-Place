@@ -38,8 +38,24 @@
 	load_plugin_textdomain( 'pp', false, dirname(PP_BASE) . '/assets/languages' );
 		
 	// load ACF lite
-	if ( !function_exists( 'get_fields' ) ) {
-		require_once( PP_PATH . '/assets/lib/acf/acf/acf-lite.php' );
+	// contains is_plugin_active() which is used below
+	if (!function_exists('is_plugin_active')) { require_once(ABSPATH . 'wp-admin/includes/plugin.php'); }
+
+	// check for ACF
+	if (is_plugin_inactive('advanced-custom-fields/acf.php') && !function_exists('get_field')) {
+
+		// make sure we are not currently trying to activate ACF
+		if (is_admin()) {
+			$action = (isset($_GET['action']) ? $_GET['action'] : '');
+			$plugin = (isset($_GET['plugin']) ? $_GET['plugin'] : '');
+			if ($action != 'activate' && $plugin != 'advanced-custom-fields/acf.php') {
+				//define('ACF_LITE' , true);
+				require_once( PP_PATH . '/assets/lib/acf/acf/acf-lite.php' );
+			}
+		} else {
+			//define('ACF_LITE', true);
+			require_once( PP_PATH . '/assets/lib/acf/acf/acf-lite.php' );
+		}
 	}
 	
 	// include post type and registered meta
