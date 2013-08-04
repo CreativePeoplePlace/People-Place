@@ -493,6 +493,8 @@ function pp_admin_notice() {
 	
 	global $pagenow, $post_type;
 
+	if (!isset($_GET['post_type'])) return;
+
 	if ($pagenow == 'edit.php' && isset($_GET['message']) && $_GET['post_type'] == 'pp') {
 		switch($_GET['message']) {
 			case 1:
