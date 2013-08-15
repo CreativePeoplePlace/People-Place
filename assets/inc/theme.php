@@ -15,7 +15,7 @@ function pp_theme_styles_scripts() {
 	wp_register_script('map', PP_JS_URL . '/map.js', array('jquery', 'gmap'), filemtime(PP_PATH . '/assets/js/map.js'));
 	wp_enqueue_script('map');
 
-    if (strpos(home_url(), PP_HOME) !== false) {
+    if ($social = apply_filters('pp_social', false)) {
 		wp_register_script('sharrre', PP_JS_URL . '/sharrre.js', array('jquery', 'gmap'), filemtime(PP_PATH . '/assets/js/sharrre.js'));
 		wp_enqueue_script('sharrre');
 	}

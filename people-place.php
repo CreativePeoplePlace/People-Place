@@ -32,7 +32,6 @@
 	define('PP_PATH', dirname(__FILE__));
 	define('PP_BASE', plugin_basename(__FILE__));
 	define('PP_FILE', __FILE__);
-	define('PP_HOME', 'creativepeopleplace.info'); 
 	
 	// load language files
 	load_plugin_textdomain( 'pp', false, dirname(PP_BASE) . '/assets/languages' );

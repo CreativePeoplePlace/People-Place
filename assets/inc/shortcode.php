@@ -130,7 +130,7 @@ function pp_map_shortcode( $atts ) {
 	<?php } ?>
 	</div>
 	
-    <?php if (strpos(home_url(), PP_HOME) !== false) { ?>
+    <?php if ($social = apply_filters('pp_social', false)) { ?>
     <div id="shareme" data-text="#PinpointYourself on the Map&hellip; "></div>
     <?php } ?>
 
@@ -148,15 +148,32 @@ function pp_map_shortcode( $atts ) {
 				//streetViewControlOptions: 	{ position: google.maps.ControlPosition.LEFT_TOP },
 				zoom					:	10,
 				scrollwheel				:	true,
-				<?php if (strpos(home_url(), PP_HOME) !== false) { ?>
-				center					:	new google.maps.LatLng(51.38121,0.789642),
-				<?php } ?>
+				<?php 
+				$latlng = apply_filters('pp_latlng', '51.38121,0.789642')
+				?>
+				center					:	new google.maps.LatLng(<?php echo $latlng; ?>),
 				callback				: 	function(map) {
 
-					<?php if (strpos(home_url(), PP_HOME) !== false) { ?>
-					// add kml files
-        			this.loadKML('swale', '<?php echo PP_KML_URL; ?>/swale.kml');
-        			this.loadKML('medway', '<?php echo PP_KML_URL; ?>/medway.kml');
+					<?php
+					$default_kmls = array(
+						array(
+							'name' => 'swale',
+							'file' => PP_KML_URL . '/swale.kml'
+						),
+						array(
+							'name' => 'medway',
+							'file' => PP_KML_URL . '/medway.kml'
+						)
+					); 
+
+					$kmls = apply_filters('pp_kmls', $default_kmls);
+					?>
+
+					// kmls
+					<?php if (!empty($kmls)) {
+						foreach ($kmls as $kml) { ?>
+        				this.loadKML('<?php echo $kml['name']; ?>', '<?php echo $kml['file']; ?>');
+						<?php } ?>
 					<?php } ?>
 					
 				}
@@ -198,7 +215,7 @@ function pp_map_shortcode( $atts ) {
 				});
 
 				// make sure the map fits to the bounds correctly
-				<?php if (strpos(home_url(), PP_HOME) == false) { ?>
+				<?php if ($bounds = apply_filters('pp_bounds', false)) { ?>
 				jQuery('#<?php echo $map_id; ?>').gmap('get', 'map').fitBounds(bounds);
 				<?php } ?>
 			});		
@@ -216,7 +233,7 @@ function pp_map_shortcode( $atts ) {
 			if ( filters.length > 0 ) {
 				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', { 'property': 'category', 'value': filters, 'operator': 'OR' }, function(marker, found) {
 					
-					<?php if (strpos(home_url(), PP_HOME) == false) { ?>
+					<?php if ($bounds = apply_filters('pp_bounds', false)) { ?>
 					if (found) {
 						jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
 					}
@@ -225,7 +242,7 @@ function pp_map_shortcode( $atts ) {
 				});
 			} else {
 				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', {}, function(marker, found) {
-					<?php if (strpos(home_url(), PP_HOME) == false) { ?>
+					<?php if ($bounds = apply_filters('pp_bounds', false)) { ?>
 					jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
 					<?php } ?>
 					marker.setVisible(true); 
@@ -287,14 +304,14 @@ function pp_map_shortcode( $atts ) {
 						});	
 					});
 
-					<?php if (strpos(home_url(), PP_HOME) == false) { ?>
+					<?php if ($bounds = apply_filters('pp_bounds', false)) { ?>
 					jQuery('#<?php echo $map_id; ?>').gmap('get', 'map').fitBounds(bounds);
 					<?php } ?>
 				}
 			});
 		});
 
-		<?php if (strpos(home_url(), PP_HOME) !== false) { ?>
+		<?php if ($social = apply_filters('pp_social', false)) { ?>
 
 		jQuery(document).ready(function($) {
 			jQuery('#shareme').sharrre({
