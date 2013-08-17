@@ -119,6 +119,17 @@ if(function_exists("register_field_group")) {
 				'default_value' => '',
 				'formatting' => 'none',
 			),
+			2 => 
+			array (
+				'key' => 'field_9',
+				'label' => __('Involved in voluntary activity?','pp'),
+				'name' => '_pp_voluntary',
+				'type' => 'true_false',
+				'order_no' => 1,
+				'instructions' => '',
+				'required' => 0,
+				'default_value' => 0,
+			),
 		),
 		'location' => 
 		array (
