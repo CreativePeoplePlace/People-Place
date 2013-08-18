@@ -8,7 +8,7 @@
 	Plugin URI: https://gumroad.com/l/people-place
 	Description: A WordPress plugin for mapping creative people in places
 	Author: Community Powered
-	Version: 0.93
+	Version: 0.94
 	Author URI: http://creativepeopleplace.info
 
 	Ideas
@@ -17,7 +17,8 @@
 	*. TinyMCE button
 	*. Better default styles for map/shortcode
 	*. allow iframe to be overwitten in theme (https://github.com/pippinsplugins/Easy-Digital-Downloads/blob/master/includes/template-functions.php#L431)
-	
+	*. snapshots can contain old data (icons, urls etc) - should probably only snapshot post ids and rebuild/temp cach each snapshot request
+
 	In Discussion
 	*. Shortcode parameter to pick default categories (how will this work with snapshots?)
 	*. Ability to tag articles, news, events to the map - how can we locate these?

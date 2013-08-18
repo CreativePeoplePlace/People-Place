@@ -529,7 +529,6 @@ function pp_ajax_handler() {
 		$snapshot = get_post($_POST['post']);
 
 		if ($snapshot->post_type == "pp_snapshot") {
-
 			$return_points = get_post_meta($snapshot->ID, '_pp_points', true);	
 		}
 	}

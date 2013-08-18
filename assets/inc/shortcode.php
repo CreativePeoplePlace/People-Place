@@ -40,7 +40,7 @@ function pp_map_shortcode( $atts ) {
 				$lat = get_post_meta( get_the_ID(), '_pp_lat', true );				
 				$lng = get_post_meta( get_the_ID(), '_pp_lng', true );
 				$url = get_post_meta( get_the_ID(), '_pp_url', true );
-				$voluntary = get_post_meta( get_the_ID(), '_pp_voluntary', true);				
+				$voluntary = get_post_meta( get_the_ID(), '_pp_voluntary', true);
 				$terms = wp_get_post_terms(get_the_ID(), 'pp_category', array("fields" => "all"));
 				
 				if (!empty($terms)) {
@@ -58,7 +58,7 @@ function pp_map_shortcode( $atts ) {
 					$icon = PP_IMAGES_URL . '/default.png';
 					$category = '';
 				}
-				
+
 				$points['markers'][] = array('id' => get_the_ID(), 'latitude' => $lat, 'longitude' => $lng, 'title' => get_the_title(), 'content' => '', 'category' => $category, 'icon' => $icon, 'url' => $url, 'voluntary' => $voluntary);
 
 			endwhile;
@@ -103,6 +103,7 @@ function pp_map_shortcode( $atts ) {
 			}
 		}
     	?>
+      	<label class="pp-voluntary"><input type="checkbox" value="voluntary"/><?php _e('Show those involved with voluntary activity', 'pp'); ?></label>
     </div>
 	
 	<?php 
@@ -200,14 +201,23 @@ function pp_map_shortcode( $atts ) {
 					} else {
 						var clickable = false;
 					}
-							
+					
+					// need to push voluntary onto the category array
+					var category = new Array();
+					if (marker.voluntary == 1) {
+						category[0] = marker.category;
+						category[1] = 'voluntary';
+					} else {
+						category[0] = marker.category;
+					}
+
 					jQuery('#<?php echo $map_id; ?>').gmap('addMarker', { 
 						'id': marker.id,
 						'position': position, 
 						'bound': true,
 						'clickable' : clickable,
 						'title' : marker.title,
-						'category' : [marker.category],
+						'category' : category,
 						'icon' : new google.maps.MarkerImage(marker.icon, null, null, null, new google.maps.Size(25, 25))						
 					}).click(function() {
 						jQuery('#<?php echo $map_id; ?>').gmap('openInfoWindow', {'content': '<a href="'+marker.url+'" target="_blank">'+marker.url+'</a>'}, this ); 
@@ -229,10 +239,14 @@ function pp_map_shortcode( $atts ) {
 			jQuery('#pp-radios-<?php echo $map_id; ?> input:checkbox:checked').each(function(i, checkbox) {
 				filters.push(jQuery(checkbox).val());
 			});
-									
+
+			// add voluntary to our filter search
+			if (jQuery('#pp-voluntary-<?php echo $map_id; ?> input:checkbox').is(':checked')) {
+				filters.push('voluntary');
+			}
+
 			if ( filters.length > 0 ) {
-				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', { 'property': 'category', 'value': filters, 'operator': 'OR' }, function(marker, found) {
-					
+				jQuery('#<?php echo $map_id; ?>').gmap('find', 'markers', { 'property': 'category', 'value': filters, 'operator': 'AND' }, function(marker, found) {
 					<?php if ($bounds = apply_filters('pp_bounds', false)) { ?>
 					if (found) {
 						jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
@@ -245,7 +259,7 @@ function pp_map_shortcode( $atts ) {
 					<?php if ($bounds = apply_filters('pp_bounds', false)) { ?>
 					jQuery('#<?php echo $map_id; ?>').gmap('addBounds', marker.position);
 					<?php } ?>
-					marker.setVisible(true); 
+					marker.setVisible(true);
 				});
 			}
 		});
@@ -291,13 +305,24 @@ function pp_map_shortcode( $atts ) {
 							clickable = false;
 						}
 
+						// need to push voluntary onto the category array
+						var category = new Array();
+						if (marker.voluntary) {
+							if (marker.voluntary == 1) {
+								category[0] = marker.category;
+								category[1] = 'voluntary';
+							} else {
+								category[0] = marker.category;
+							}
+						}
+
 						jQuery('#<?php echo $map_id; ?>').gmap('addMarker', { 
 							'id': marker.id,
 							'position': position, 
 							'bound': true,
 							'clickable' : clickable,
 							'title' : marker.title,
-							'category' : [marker.category],
+							'category' : category,
 							'icon' : new google.maps.MarkerImage(marker.icon, null, null, null, new google.maps.Size(25, 25))						
 						}).click(function() {
 							jQuery('#<?php echo $map_id; ?>').gmap('openInfoWindow', {'content': '<a href="'+marker.url+'" target="_blank">'+marker.url+'</a>'}, this ); 

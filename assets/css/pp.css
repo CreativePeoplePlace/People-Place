@@ -76,12 +76,25 @@ contents:
 	margin-right: 8px;
 	}
 
+.pp-radios label input
+	{
+	position: relative;
+	top: 6px;
+	}
+
 .pp-radios img
 	{
 	position: absolute;
 	top: -24px;
 	margin-left: -15px !important;
 	left: 50%;
+	}
+
+.pp-radios label.pp-voluntary
+	{
+	display: block;
+	padding: 10px 0 0 0;
+	clear: both:;
 	}
 
 /* share buttons on creativepeopleplace.info */
