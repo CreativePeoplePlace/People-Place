@@ -314,6 +314,8 @@ function pp_map_shortcode( $atts ) {
 							} else {
 								category[0] = marker.category;
 							}
+						} else {
+							category[0] = marker.category;
 						}
 
 						jQuery('#<?php echo $map_id; ?>').gmap('addMarker', { 
