@@ -529,13 +529,29 @@ function pp_ajax_handler() {
 		$snapshot = get_post($_POST['post']);
 
 		if ($snapshot->post_type == "pp_snapshot") {
+			
 			$return_points = get_post_meta($snapshot->ID, '_pp_points', true);	
+
+			// check if the point exists still - if it does update the icon
+			for ($i=0; $i <= count($return_points['markers']); $i++) {
+
+				if (get_post($return_points['markers'][$i]['id'])) {
+
+					$terms = wp_get_post_terms($return_points['markers'][$i]['id'], 'pp_category', array("fields" => "all"));
+					$icon_returned = get_field('_pp_icon', 'pp_category_'.$terms[0]->term_id);
+				
+					if ($icon_returned != '') {
+						$return_points['markers'][$i]['icon'] = $icon_returned;
+					} else {
+						$return_points['markers'][$i]['icon'] = PP_IMAGES_URL . '/default.png';
+					}
+				}
+			}
 		}
 	}
 		
 	echo json_encode($return_points);				
 
 	die();
-
 }
 ?>

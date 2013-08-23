@@ -17,7 +17,8 @@
 	*. TinyMCE button
 	*. Better default styles for map/shortcode
 	*. allow iframe to be overwitten in theme (https://github.com/pippinsplugins/Easy-Digital-Downloads/blob/master/includes/template-functions.php#L431)
-	*. snapshots can contain old data (icons, urls etc) - should probably only snapshot post ids and rebuild/temp cach each snapshot request
+	*. look for theme CSS file and use it if it exists (most themes seem to require small css tweaks)
+	*. esc_url_raw($input, array('http', 'https') on sync url
 
 	In Discussion
 	*. Shortcode parameter to pick default categories (how will this work with snapshots?)
